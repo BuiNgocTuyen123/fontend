@@ -11,13 +11,11 @@ export const fetchProducts = async () => {
         throw error;
     }
 };
-export const addProduct = async (productData: {
-    name: string;
-    description?: string;
-    price: number;
-    stock: number;
-    image?: string;
-}) => {
-    const response = await axios.post(`${API_URL}/products`, productData);
+export const addProduct = async (productData: FormData) => {
+    const response = await axios.post(`${API_URL}/products`, productData, {
+        headers: {
+            "Content-Type": "multipart/form-data", // 🔹 Gửi dữ liệu file
+        },
+    });
     return response.data;
 };
