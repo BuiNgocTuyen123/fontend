@@ -1,19 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";  // Import useNavigate từ react-router-dom
 import "./AppHeader.css"; // Import CSS file
-import { FaSearch } from "react-icons/fa/index";
 
 const AppHeader = () => {
     const [searchTerm, setSearchTerm] = useState("");
+    const [isLoggedIn, setIsLoggedIn] = useState(false);  // Trạng thái đăng nhập
+    const navigate = useNavigate();  // Sử dụng useNavigate
+
+    useEffect(() => {
+        // Kiểm tra nếu có token trong localStorage (giả sử token được lưu ở đây)
+        const token = localStorage.getItem("admin_token");
+        if (token) {
+            setIsLoggedIn(true);  // Người dùng đã đăng nhập
+        } else {
+            setIsLoggedIn(false);  // Người dùng chưa đăng nhập
+        }
+    }, []); // useEffect chỉ chạy một lần khi component mount
 
     const handleSearch = () => {
         alert(`Tìm kiếm sản phẩm: ${searchTerm}`);
+    };
+
+    const handleLoginLogout = () => {
+        if (isLoggedIn) {
+            // Nếu người dùng đã đăng nhập, thực hiện đăng xuất
+            localStorage.removeItem("admin_token");  // Xóa token khỏi localStorage
+            setIsLoggedIn(false);  // Cập nhật trạng thái đăng nhập
+            navigate("/login");  // Điều hướng về trang đăng nhập
+        } else {
+            // Nếu người dùng chưa đăng nhập, điều hướng đến trang login
+            navigate("/login"); 
+        }
     };
 
     return (
         <header className="header bg-dark">
             {/* React Logo */}
             <div className="logo">
-                <a href="#">
+                <a href="/">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" 
                          alt="React Logo" 
                          className="react-icon" />
@@ -44,13 +68,17 @@ const AppHeader = () => {
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
-                           <button className="search-btn">
-    <i className="fas fa-search"></i>
-</button>
-
+                                <button className="search-btn" onClick={handleSearch}>
+                                    <i className="fas fa-search"></i>
+                                </button>
                             </li>
                             <li className="nav-item">
-                                <a className="menu nav-link login-btn" href="#">Đăng nhập</a>
+                                <button 
+                                    className="menu nav-link login-btn" 
+                                    onClick={handleLoginLogout}
+                                >
+                                    {isLoggedIn ? "Đăng xuất" : "Đăng nhập"}  {/* Nếu đã đăng nhập, hiển thị "Đăng xuất", nếu chưa thì "Đăng nhập" */}
+                                </button>
                             </li>
                         </ul>
                     </div>
